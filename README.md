@@ -58,7 +58,7 @@ The ETL pipeline follows a classic **Extract → Transform → Load** architectu
 
 **Load:** Row-by-row insert into each DWH dimension/fact table via `pyodbc` cursor. `BookDim` is re-queried after insert to obtain the generated surrogate key (`Book_SK`) which is then joined back to FactOrders before loading.
 
-> ![Pipeline Design](images/pipeline_design.png)
+> ![Pipeline Design](images/pipeline_design.PNG)
 
 ---
 
