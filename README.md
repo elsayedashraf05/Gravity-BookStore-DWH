@@ -264,11 +264,11 @@ Gravity-BookStore-DWH/
 └── images/                    # Screenshots (add yours here)
     ├── pipeline_design.png
     ├── dwh_schema.png
-    ├── db_diagram.png
-    ├── customer_dim.png
-    ├── book_dim.png
-    ├── date_dim.png
-    └── fact_orders.png
+    ├── db_diagram.jpg
+    ├── customer_dim.jpg
+    ├── book_dim.jpg
+    ├── date_dim.jpg
+    └── fact_orders.jpg
 ```
 
 ---
