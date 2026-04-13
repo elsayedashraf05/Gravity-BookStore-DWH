@@ -4,22 +4,6 @@
 
 ---
 
-## 📌 Table of Contents
-
-- [Project Overview](#project-overview)
-- [Tech Stack](#tech-stack)
-- [Project Steps](#project-steps)
-  - [Step 1 — Pipeline Design](#step-1--pipeline-design)
-  - [Step 2 — DWH Schema Design](#step-2--dwh-schema-design)
-  - [Step 3 — Data Mapping](#step-3--data-mapping)
-  - [Step 4 — DDL Implementation](#step-4--ddl-implementation)
-  - [Step 5 — ETL Using Python](#step-5--etl-using-python)
-- [Repository Structure](#repository-structure)
-- [How to Run](#how-to-run)
-- [Author](#author)
-
----
-
 ## Project Overview
 
 This project implements a **Gravity BookStore Data Warehouse** based on a transactional OLTP system (`BookStore_EG`). The goal is to transform raw operational data into an analytics-ready **Star Schema** (`Book_DWH`) that enables efficient reporting on sales performance, customer behavior, and book popularity.
@@ -74,8 +58,7 @@ The ETL pipeline follows a classic **Extract → Transform → Load** architectu
 
 **Load:** Row-by-row insert into each DWH dimension/fact table via `pyodbc` cursor. `BookDim` is re-queried after insert to obtain the generated surrogate key (`Book_SK`) which is then joined back to FactOrders before loading.
 
-> 📸 *Add your pipeline diagram image here:*
-> `![Pipeline Design](images/pipeline_design.png)`
+> [Pipeline Design](images/pipeline_design.png)
 
 ---
 
@@ -84,32 +67,8 @@ The ETL pipeline follows a classic **Extract → Transform → Load** architectu
 The data warehouse follows a **Star Schema** with one central fact table surrounded by three dimension tables.
 
 ```
-              ┌──────────────────────┐
-              │     CustomerDim      │
-              │──────────────────────│
-              │ CustomerID (PK)      │
-              │ FullName             │
-              │ City                 │
-              └──────────┬───────────┘
-                         │
-┌─────────────────┐  ┌───▼───────────────────┐  ┌──────────────────────┐
-│    BookDim      │  │      FactOrders        │  │       DateDim        │
-│─────────────────│  │────────────────────────│  │──────────────────────│
-│ Book_SK (PK)    │◄─│ SalesID (PK surrogate) │─►│ Date_SK (PK)         │
-│ BookID          │  │ OrderID                │  │ Full_Date            │
-│ Title           │  │ CustomerID (FK)        │  │ Year / Quarter       │
-│ CategoryDesc    │  │ BookID (FK → Book_SK)  │  │ Month_Number         │
-│ AuthorName      │  │ OrderDate (FK)         │  │ Month_Name           │
-│ Price           │  │ Quantity               │  │ Day_of_Week          │
-│ BookAge         │  │ UnitPrice              │  │ Day_Name             │
-└─────────────────┘  │ TotalAmount            │  │ Day_of_Month         │
-                     └────────────────────────┘  │ Week_of_Year         │
-                                                  │ Is_Weekend           │
-                                                  └──────────────────────┘
 ```
-
-> 📸 *Add your schema diagram screenshot here:*
-> `![DWH Schema](images/dwh_schema.png)`
+> [DWH Schema](images/dwh_schema.png)
 
 ---
 
@@ -117,26 +76,6 @@ The data warehouse follows a **Star Schema** with one central fact table surroun
 
 The mapping document (`Maping.xlsx`) defines the full **source-to-target column lineage** for each dimension and the fact table.
 
-| Target Table | Target Column | Source Table(s) | Source Column | Transformation |
-|---|---|---|---|---|
-| CustomerDim | CustomerID | Customer | CustomerID | Direct |
-| CustomerDim | FullName | Customer | FirstName, LastName | `CONCAT(FirstName, ' ', LastName)` |
-| CustomerDim | City | Customer | City | Fill nulls → `'Unknown'` |
-| BookDim | BookID | Book | BookID | Direct |
-| BookDim | Title | Book | Title | Direct |
-| BookDim | CategoryDescription | Category | CategoryDescription | Left Join on CategoryID |
-| BookDim | AuthorName | Author | AuthorName | Left Join via Author_Book; Fill nulls → `'Unknown'` |
-| BookDim | Price | Book | Price | Direct |
-| BookDim | BookAge | Book | Year | `YEAR(GETDATE()) - Year` |
-| DateDim | Date_SK | — | — | `FORMAT(date, 'yyyyMMdd')` as INT |
-| DateDim | Full_Date / Year / Quarter / Month / Day / Is_Weekend | — | — | Stored procedure `sp_PopulateDateDimension` (2020–2030) |
-| FactOrders | OrderID | Ordering | OrderID | Direct |
-| FactOrders | CustomerID | Ordering | CustomerID | Fill nulls → `0` (guest account) |
-| FactOrders | BookID | BookDim | Book_SK | Merge on BookID to get surrogate key |
-| FactOrders | OrderDate | Ordering | OrderDate | `strftime('%Y%m%d').astype(int)` |
-| FactOrders | Quantity | Book_Order | Quantity | Fill nulls → `1` |
-| FactOrders | UnitPrice | Book_Order | Price | Fill nulls → `BookDim.Price` via merge |
-| FactOrders | TotalAmount | Derived | — | `Quantity × UnitPrice` |
 
 > 📎 Full mapping file: [`Maping.xlsx`](Maping.xlsx)
 
@@ -156,14 +95,12 @@ The DWH schema was implemented using SQL Server DDL statements. Key design decis
 - [`book_dwh.sql`](book_dwh.sql) — Full DDL for all tables + stored procedure + date dimension population
 - [`source_queries.sql`](source_queries.sql) — OLTP source views used during extraction
 
-> 📸 *Add your SQL Server database diagram screenshot here:*
-> `![Database Diagram](images/db_diagram.png)`
+> [Database Diagram](images/db_diagram.jpg)
 
-> 📸 *Add screenshots of each populated DWH table here:*
-> `![CustomerDim Table](images/customer_dim.png)`
-> `![BookDim Table](images/book_dim.png)`
-> `![DateDim Table](images/date_dim.png)`
-> `![FactOrders Table](images/fact_orders.png)`
+> [CustomerDim Table](images/customer_dim.jpg)
+> [BookDim Table](images/book_dim.jpg)
+> [DateDim Table](images/date_dim.jpg)
+> [FactOrders Table](images/fact_orders.jpg)
 
 ---
 
