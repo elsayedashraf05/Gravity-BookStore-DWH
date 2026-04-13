@@ -58,7 +58,7 @@ The ETL pipeline follows a classic **Extract → Transform → Load** architectu
 
 **Load:** Row-by-row insert into each DWH dimension/fact table via `pyodbc` cursor. `BookDim` is re-queried after insert to obtain the generated surrogate key (`Book_SK`) which is then joined back to FactOrders before loading.
 
-> [Pipeline Design](images/pipeline_design.png)
+> ![Pipeline Design](images/pipeline_design.png)
 
 ---
 
@@ -68,7 +68,7 @@ The data warehouse follows a **Star Schema** with one central fact table surroun
 
 ```
 ```
-> [DWH Schema](images/dwh_schema.png)
+> ![DWH Schema](images/dwh_schema.png)
 
 ---
 
@@ -95,12 +95,12 @@ The DWH schema was implemented using SQL Server DDL statements. Key design decis
 - [`book_dwh.sql`](book_dwh.sql) — Full DDL for all tables + stored procedure + date dimension population
 - [`source_queries.sql`](source_queries.sql) — OLTP source views used during extraction
 
-> [Database Diagram](images/db_diagram.jpg)
+> ![Database Diagram](images/db_diagram.jpg)
 
-> [CustomerDim Table](images/customer_dim.jpg)
-> [BookDim Table](images/book_dim.jpg)
-> [DateDim Table](images/date_dim.jpg)
-> [FactOrders Table](images/fact_orders.jpg)
+> ![CustomerDim Table](images/customer_dim.jpg)
+> ![BookDim Table](images/book_dim.jpg)
+> ![DateDim Table](images/date_dim.jpg)
+> ![FactOrders Table](images/fact_orders.jpg)
 
 ---
 
